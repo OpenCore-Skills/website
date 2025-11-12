@@ -35,9 +35,7 @@
             color: #586069;
         }
 
-        /* --- UPDATED: Tool Sections Layout --- */
-
-        /* Common class for spacing between tools */
+        /* Tool Sections Layout */
         .tool-section {
             margin-bottom: 25px;
         }
@@ -61,9 +59,6 @@
             /* No grid needed, it will be 100% width by default */
         }
         
-        /* --- End Tool Sections --- */
-
-
         .search-group {
             display: flex;
             flex-direction: column;
@@ -223,7 +218,7 @@
 
         <section id="tool-3-description" class="tool-section">
             <div class="search-group">
-                <label for="search-description">Search in Description (100% width)</label>
+                <label for="search-description">Search in Description</label>
                 <input type="text" id="search-description" placeholder="e.g. 'grasp', 'operator'">
             </div>
         </section>
@@ -477,13 +472,14 @@
 
         // --- 6. EVENT LISTENERS ---
 
+        // THIS BLOCK IS NOW CORRECTED
         document.addEventListener('DOMContentLoaded', () => {
             populateChecklists();
 
             const urlParams = new URLSearchParams(window.location.search);
             const domainTagQuery = urlParams.get('domain_tag');
             const missionTagQuery = urlParams.get('mission_tag');
-_obsolete: const descriptionQuery = urlParams.get('description');
+            // The invalid 'descriptionQuery' lines are now gone.
 
             if (domainTagQuery) {
                 searchDomainInput.value = domainTagQuery;
@@ -493,9 +489,6 @@ _obsolete: const descriptionQuery = urlParams.get('description');
                 searchMissionInput.value = missionTagQuery;
                 updateChecklistFromSearch('mission');
             }
-_obsolete: if (descriptionQuery) {
-_obsolete:     searchDescriptionInput.value = descriptionQuery;
-_obsolete: }
 
             filterAndRender();
         });
