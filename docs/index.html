@@ -40,7 +40,7 @@
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
             gap: 15px;
-            margin-bottom: 15px; /* Reduced margin */
+            margin-bottom: 15px;
         }
         .search-group {
             display: flex;
@@ -57,10 +57,11 @@
             border-radius: 6px;
         }
 
-        /* --- NEW: Checklist Styles --- */
+        /* Checklist Styles */
         #checklist-container {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            /* UPDATED: Changed minmax for 3 columns */
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
             gap: 15px;
             margin-bottom: 30px;
         }
@@ -79,6 +80,9 @@
             padding: 10px;
             border-radius: 6px;
             min-height: 40px;
+            /* Allow scrolling for many tags */
+            max-height: 150px;
+            overflow-y: auto;
         }
         .check-tag {
             padding: 4px 10px;
@@ -90,7 +94,7 @@
             border: 1px solid #d1d5da;
             cursor: pointer;
             transition: all 0.1s;
-            user-select: none; /* Prevents text selection on click */
+            user-select: none;
         }
         .check-tag.selected {
             background-color: #0366d6;
@@ -100,8 +104,6 @@
         .check-tag:hover {
             opacity: 0.8;
         }
-        /* --- End NEW --- */
-
 
         /* Skill List */
         #skill-list {
@@ -167,7 +169,7 @@
         <section id="controls">
             <div class="search-group">
                 <label for="search-name">Search by Name</label>
-                <input type="text" id="search-name" placeholder="e.g. 'pick'">
+                <input type="text" id="search-name" placeholder="e.g. 'pick, place'">
             </div>
             <div class="search-group">
                 <label for="search-domain">Search by Domain Tag</label>
@@ -181,6 +183,11 @@
 
         <section id="checklist-container">
             <div class="checklist-group">
+                <h3>Skill Name</h3>
+                <div id="name-checklist" class="tag-checklist">
+                    </div>
+            </div>
+            <div class="checklist-group">
                 <h3>Domain Tags</h3>
                 <div id="domain-checklist" class="tag-checklist">
                     </div>
@@ -191,6 +198,7 @@
                     </div>
             </div>
         </section>
+
         <main id="skill-list">
             </main>
     </div>
@@ -227,20 +235,18 @@
         const skillListContainer = document.getElementById('skill-list');
         const skillCardTemplate = document.getElementById('skill-card-template');
         
-        // NEW: Checklist references
+        // NEW: Add Name Checklist
+        const nameChecklistContainer = document.getElementById('name-checklist');
         const domainChecklistContainer = document.getElementById('domain-checklist');
         const missionChecklistContainer = document.getElementById('mission-checklist');
         
         // --- 3. GLOBAL STATE (for checklists) ---
+        let allSkillNames = [];
         let allDomainTags = [];
         let allMissionTags = [];
 
         // --- 4. RENDERING & FILTERING FUNCTIONS ---
 
-        /**
-         * Renders a list of skills into the container.
-         * (Identical to previous version, but adds tag click listeners)
-         */
         function renderSkills(skillsToRender) {
             skillListContainer.innerHTML = ''; // Clear current list
 
@@ -278,28 +284,41 @@
 
         /**
          * MODIFIED: Filters the skill list based on the search inputs.
-         * Now supports comma-separated values.
          */
         function filterAndRender() {
-            const nameQuery = searchNameInput.value.toLowerCase().trim();
+            // Get comma-separated queries for all fields
+            const nameQueries = searchNameInput.value.split(',')
+                .map(q => q.trim().toLowerCase()).filter(q => q.length > 0);
             
-            // Get comma-separated queries and turn them into arrays
             const domainQueries = searchDomainInput.value.split(',')
                 .map(q => q.trim().toLowerCase()).filter(q => q.length > 0);
             
             const missionQueries = searchMissionInput.value.split(',')
                 .map(q => q.trim().toLowerCase()).filter(q => q.length > 0);
 
-            const filteredSkills = skills.filter(skill => {
-                const nameMatch = nameQuery === '' || skill.name.toLowerCase().includes(nameQuery);
+            // Create lowercase versions of skill tags for comparison
+            const getLowerTags = (skill, tagType) => {
+                return (skill[tagType] || []).map(t => t.toLowerCase());
+            };
 
-                // NEW LOGIC: Use .every() to check if ALL tags in the query are present
+            const filteredSkills = skills.filter(skill => {
+                const skillNameLower = skill.name.toLowerCase();
+                const skillDomainTags = getLowerTags(skill, 'domain_tags');
+                const skillMissionTags = getLowerTags(skill, 'mission_tags');
+
+                // MODIFIED: Name logic is now an OR match on substrings
+                const nameMatch = nameQueries.length === 0 || nameQueries.some(query =>
+                    skillNameLower.includes(query)
+                );
+                
+                // Domain logic is an AND match on exact tags
                 const domainMatch = domainQueries.length === 0 || domainQueries.every(queryTag =>
-                    skill.domain_tags.some(skillTag => skillTag.toLowerCase().includes(queryTag))
+                    skillDomainTags.includes(queryTag)
                 );
 
+                // Mission logic is an AND match on exact tags
                 const missionMatch = missionQueries.length === 0 || missionQueries.every(queryTag =>
-                    skill.mission_tags.some(skillTag => skillTag.toLowerCase().includes(queryTag))
+                    skillMissionTags.includes(queryTag)
                 );
                 
                 return nameMatch && domainMatch && missionMatch;
@@ -308,21 +327,31 @@
             renderSkills(filteredSkills);
         }
 
-        // --- 5. NEW: CHECKLIST FUNCTIONS ---
+        // --- 5. CHECKLIST FUNCTIONS ---
 
         /**
-         * Finds all unique tags and populates the checklist boxes.
+         * MODIFIED: Finds all unique tags AND names and populates the checklists.
          */
         function populateChecklists() {
             // Use Set for automatic de-duplication
+            const nameSet = new Set(skills.map(s => s.name));
             const domainTagSet = new Set(skills.flatMap(s => s.domain_tags));
             const missionTagSet = new Set(skills.flatMap(s => s.mission_tags));
             
             // Convert to sorted arrays
+            allSkillNames = [...nameSet].sort();
             allDomainTags = [...domainTagSet].sort();
             allMissionTags = [...missionTagSet].sort();
             
-            // Create and append tag elements
+            // NEW: Populate names
+            allSkillNames.forEach(name => {
+                const tagEl = document.createElement('span');
+                tagEl.className = 'check-tag';
+                tagEl.textContent = name;
+                tagEl.addEventListener('click', () => handleChecklistClick(tagEl, 'name'));
+                nameChecklistContainer.appendChild(tagEl);
+            });
+            
             allDomainTags.forEach(tag => {
                 const tagEl = document.createElement('span');
                 tagEl.className = 'check-tag';
@@ -341,9 +370,7 @@
         }
         
         /**
-         * Handles a user clicking on a checklist tag.
-         * @param {HTMLElement} tagElement - The tag element that was clicked.
-         * @param {string} tagType - 'domain' or 'mission'.
+         * MODIFIED: Handles clicks for 'name', 'domain', or 'mission'
          */
         function handleChecklistClick(tagElement, tagType) {
             tagElement.classList.toggle('selected');
@@ -351,17 +378,21 @@
         }
 
         /**
-         * Reads the selected tags from a checklist and updates the corresponding search input.
-         * @param {string} tagType - 'domain' or 'mission'.
+         * MODIFIED: Reads selected tags and updates the corresponding search input.
          */
         function updateSearchFromChecklist(tagType) {
             let container, input;
             if (tagType === 'domain') {
                 container = domainChecklistContainer;
                 input = searchDomainInput;
-            } else {
+            } else if (tagType === 'mission') {
                 container = missionChecklistContainer;
                 input = searchMissionInput;
+            } else if (tagType === 'name') { // NEW
+                container = nameChecklistContainer;
+                input = searchNameInput;
+            } else {
+                return;
             }
             
             const selectedTags = [...container.querySelectorAll('.check-tag.selected')]
@@ -372,17 +403,21 @@
         }
         
         /**
-         * Reads the search input (comma-separated) and updates the checklist.
-         * @param {string} tagType - 'domain' or 'mission'.
+         * MODIFIED: Reads search input and updates the corresponding checklist.
          */
         function updateChecklistFromSearch(tagType) {
             let container, input;
             if (tagType === 'domain') {
                 container = domainChecklistContainer;
                 input = searchDomainInput;
-            } else {
+            } else if (tagType === 'mission') {
                 container = missionChecklistContainer;
                 input = searchMissionInput;
+            } else if (tagType === 'name') { // NEW
+                container = nameChecklistContainer;
+                input = searchNameInput;
+            } else {
+                return;
             }
             
             const queries = input.value.split(',')
@@ -390,15 +425,21 @@
             
             container.querySelectorAll('.check-tag').forEach(tagEl => {
                 const tagText = tagEl.textContent.toLowerCase();
-                const isSelected = queries.includes(tagText);
+                // Check if any query *is* this tag
+                // MODIFIED: For names, check if tag *includes* query, for others, check exact match
+                let isSelected = false;
+                if (tagType === 'name') {
+                    isSelected = queries.some(q => tagText.includes(q));
+                } else {
+                    isSelected = queries.includes(tagText);
+                }
+                
                 tagEl.classList.toggle('selected', isSelected);
             });
         }
 
         /**
-         * Handles a user clicking on a tag *inside a skill card*.
-         * @param {string} tagText - The text content of the tag.
-         * @param {string} tagType - 'domain' or 'mission'.
+         * MODIFIED: Handles tag clicks from skill cards.
          */
         function handleTagClick(tagText, tagType) {
             let input = (tagType === 'domain') ? searchDomainInput : searchMissionInput;
@@ -414,21 +455,22 @@
             
             input.value = currentQueries.join(', ');
             
-            // Sync checklists and re-filter
             updateChecklistFromSearch(tagType);
             filterAndRender();
         }
 
         // --- 6. EVENT LISTENERS ---
 
-        // Render everything on page load
         document.addEventListener('DOMContentLoaded', () => {
-            populateChecklists(); // NEW
+            populateChecklists();
             renderSkills(skills);
         });
 
-        // Add listeners to search inputs
-        searchNameInput.addEventListener('input', filterAndRender);
+        // MODIFIED: All inputs now sync with their checklists
+        searchNameInput.addEventListener('input', () => {
+            updateChecklistFromSearch('name');
+            filterAndRender();
+        });
         
         searchDomainInput.addEventListener('input', () => {
             updateChecklistFromSearch('domain');
