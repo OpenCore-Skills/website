@@ -1,0 +1,4 @@
+name: scan
+domain_tags: [inspection, navigation, perception]
+mission_tags: [mapping, quality_control, exploration, 3d_modelling]
+description: Creates a 3D model, point cloud, or 2D map of an area or object.
