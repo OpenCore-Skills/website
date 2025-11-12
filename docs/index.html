@@ -38,7 +38,7 @@
         /* Search Controls */
         #controls {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
             gap: 15px;
             margin-bottom: 15px;
         }
@@ -176,6 +176,12 @@
                 <label for="search-name">Search by Name</label>
                 <input type="text" id="search-name" placeholder="e.g. 'pick, place'">
             </div>
+            
+            <div class="search-group">
+                <label for="search-description">Search in Description</label>
+                <input type="text" id="search-description" placeholder="e.g. 'grasp', 'operator'">
+            </div>
+
             <div class="search-group">
                 <label for="search-domain">Search by Domain Tag</label>
                 <input type="text" id="search-domain" placeholder="e.g. 'manipulation, hri'">
@@ -236,6 +242,7 @@
 
         // --- 2. DOM REFERENCES ---
         const searchNameInput = document.getElementById('search-name');
+        const searchDescriptionInput = document.getElementById('search-description');
         const searchDomainInput = document.getElementById('search-domain');
         const searchMissionInput = document.getElementById('search-mission');
         const skillListContainer = document.getElementById('skill-list');
@@ -297,6 +304,8 @@
             const nameQueries = searchNameInput.value.split(',')
                 .map(q => q.trim().toLowerCase()).filter(q => q.length > 0);
             
+            const descriptionQuery = searchDescriptionInput.value.toLowerCase().trim();
+            
             const domainQueries = searchDomainInput.value.split(',')
                 .map(q => q.trim().toLowerCase()).filter(q => q.length > 0);
             
@@ -309,6 +318,7 @@
 
             const filteredSkills = skills.filter(skill => {
                 const skillNameLower = skill.name.toLowerCase();
+                const skillDescriptionLower = skill.description.toLowerCase();
                 const skillDomainTags = getLowerTags(skill, 'domain_tags');
                 const skillMissionTags = getLowerTags(skill, 'mission_tags');
 
@@ -317,6 +327,9 @@
                     skillNameLower.includes(query)
                 );
                 
+                // Description logic is a simple "includes" check
+                const descriptionMatch = descriptionQuery === '' || skillDescriptionLower.includes(descriptionQuery);
+
                 // Domain logic is an AND match on exact tags
                 const domainMatch = domainQueries.length === 0 || domainQueries.every(queryTag =>
                     skillDomainTags.includes(queryTag)
@@ -327,7 +340,7 @@
                     skillMissionTags.includes(queryTag)
                 );
                 
-                return nameMatch && domainMatch && missionMatch;
+                return nameMatch && descriptionMatch && domainMatch && missionMatch;
             });
 
             renderSkills(filteredSkills);
@@ -409,7 +422,6 @@
                 input = searchNameInput;
             } else {
                 return;
-Empty
             }
             
             const queries = input.value.split(',')
@@ -448,37 +460,35 @@ Empty
 
         // --- 6. EVENT LISTENERS ---
 
-        // UPDATED: This whole block is new
         document.addEventListener('DOMContentLoaded', () => {
-            // 1. Create the checklist filters
             populateChecklists();
 
-            // 2. NEW: Check for URL parameters
             const urlParams = new URLSearchParams(window.location.search);
             const domainTagQuery = urlParams.get('domain_tag');
             const missionTagQuery = urlParams.get('mission_tag');
+            const descriptionQuery = urlParams.get('description');
 
-            // 3. NEW: If a domain tag is found, apply it
             if (domainTagQuery) {
                 searchDomainInput.value = domainTagQuery;
                 updateChecklistFromSearch('domain');
             }
-            // 4. NEW: If a mission tag is found, apply it
             if (missionTagQuery) {
                 searchMissionInput.value = missionTagQuery;
                 updateChecklistFromSearch('mission');
             }
+            if (descriptionQuery) {
+                searchDescriptionInput.value = descriptionQuery;
+            }
 
-            // 5. Run the filter. This will show all skills
-            //    OR a filtered list if a URL parameter was found.
             filterAndRender();
         });
-        // END UPDATE
 
         searchNameInput.addEventListener('input', () => {
             updateChecklistFromSearch('name');
             filterAndRender();
         });
+        
+        searchDescriptionInput.addEventListener('input', filterAndRender);
         
         searchDomainInput.addEventListener('input', () => {
             updateChecklistFromSearch('domain');
