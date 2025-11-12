@@ -1,0 +1,4 @@
+name: screw
+domain_tags: [process, manufacturing, manipulation, assembly]
+mission_tags: [screwing, assembly, electronics]
+description: Uses a tool to apply torque and fasten a screw at a specified location.
