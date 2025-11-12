@@ -1,0 +1,4 @@
+name: inspect
+domain_tags: [inspection, vision, quality_control]
+mission_tags: [quality_assurance, anomaly_detection]
+description: Performs a visual check on a target part to detect defects or anomalies.
