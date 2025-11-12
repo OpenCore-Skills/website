@@ -140,107 +140,107 @@
 
 
     <script>
-        // --- 1. DATOS DE LOS SKILLS (Maqueta) ---
-        // En una app real, esto vendría de una API o de cargar los archivos YAML.
-        const skills = [
-            { name: "pick", domain_tags: ["manipulation", "grasping"], mission_tags: ["pick_and_place", "bin_picking", "logistics"], description: "Senses and grasps a target object from a specified location." },
-            { name: "place", domain_tags: ["manipulation", "grasping"], mission_tags: ["pick_and_place", "assembly", "sorting"], description: "Releases a currently held object at a specified target pose." },
-            { name: "navigate", domain_tags: ["navigation", "mobility"], mission_tags: ["logistics", "transport", "exploration"], description: "Moves the robot base from its current location to a target destination." },
-            { name: "inspect", domain_tags: ["inspection", "vision", "quality_control"], mission_tags: ["quality_assurance", "anomaly_detection"], description: "Performs a visual check on a target part to detect defects or anomalies." },
-            { name:g: "handover", domain_tags: ["hri", "manipulation", "collaboration"], mission_tags: ["assistance", "assembly", "human_robot_interaction"], description: "Safely offers a held object to a human operator or takes an object from them." },
-            { name: "follow", domain_tags: ["hri", "navigation", "collaboration", "mobility"], mission_tags: ["assistance", "logistics", "human_robot_interaction"], description: "Follows a designated human operator while maintaining a safe distance." },
-            { name: "weld", domain_tags: ["process", "manufacturing", "manipulation"], mission_tags: ["welding", "assembly", "fabrication"], description: "Executes a welding path on a target seam using a dedicated tool." },
-            { name: "screw", domain_tags: ["process", "manufacturing", "manipulation", "assembly"], mission_tags: ["screwing", "assembly", "electronics"], description: "Uses a tool to apply torque and fasten a screw at a specified location." },
-            { name: "scan", domain_tags: ["inspection", "navigation", "perception"], mission_tags: ["mapping", "quality_control", "exploration", "3d_modelling"], description: "Creates a 3D model, point cloud, or 2D map of an area or object." },
-            { name: "avoid", domain_tags: ["navigation", "safety", "perception", "mobility"], mission_tags: ["dynamic_obstacle_avoidance", "safety_protocol"], description: "Actively avoids dynamic and static obstacles while performing a primary mission." }
-        ];
+    // --- 1. DATOS DE LOS SKILLS (Maqueta) ---
+    // En una app real, esto vendría de una API o de cargar los archivos YAML.
+    const skills = [
+        { name: "pick", domain_tags: ["manipulation", "grasping"], mission_tags: ["pick_and_place", "bin_picking", "logistics"], description: "Senses and grasps a target object from a specified location." },
+        { name: "place", domain_tags: ["manipulation", "grasping"], mission_tags: ["pick_and_place", "assembly", "sorting"], description: "Releases a currently held object at a specified target pose." },
+        { name: "navigate", domain_tags: ["navigation", "mobility"], mission_tags: ["logistics", "transport", "exploration"], description: "Moves the robot base from its current location to a target destination." },
+        { name: "inspect", domain_tags: ["inspection", "vision", "quality_control"], mission_tags: ["quality_assurance", "anomaly_detection"], description: "Performs a visual check on a target part to detect defects or anomalies." },
+        { name: "handover", domain_tags: ["hri", "manipulation", "collaboration"], mission_tags: ["assistance", "assembly", "human_robot_interaction"], description: "Safely offers a held object to a human operator or takes an object from them." },
+        { name: "follow", domain_tags: ["hri", "navigation", "collaboration", "mobility"], mission_tags: ["assistance", "logistics", "human_robot_interaction"], description: "Follows a designated human operator while maintaining a safe distance." },
+        { name: "weld", domain_tags: ["process", "manufacturing", "manipulation"], mission_tags: ["welding", "assembly", "fabrication"], description: "Executes a welding path on a target seam using a dedicated tool." },
+        { name: "screw", domain_tags: ["process", "manufacturing", "manipulation", "assembly"], mission_tags: ["screwing", "assembly", "electronics"], description: "Uses a tool to apply torque and fasten a screw at a specified location." },
+        { name: "scan", domain_tags: ["inspection", "navigation", "perception"], mission_tags: ["mapping", "quality_control", "exploration", "3d_modelling"], description: "Creates a 3D model, point cloud, or 2D map of an area or object." },
+        { name: "avoid", domain_tags: ["navigation", "safety", "perception", "mobility"], mission_tags: ["dynamic_obstacle_avoidance", "safety_protocol"], description: "Actively avoids dynamic and static obstacles while performing a primary mission." }
+    ];
 
-        // --- 2. REFERENCIAS AL DOM ---
-        const searchNameInput = document.getElementById('search-name');
-        const searchDomainInput = document.getElementById('search-domain');
-        const searchMissionInput = document.getElementById('search-mission');
-        const skillListContainer = document.getElementById('skill-list');
-        const skillCardTemplate = document.getElementById('skill-card-template');
+    // --- 2. REFERENCIAS AL DOM ---
+    const searchNameInput = document.getElementById('search-name');
+    const searchDomainInput = document.getElementById('search-domain');
+    const searchMissionInput = document.getElementById('search-mission');
+    const skillListContainer = document.getElementById('skill-list');
+    const skillCardTemplate = document.getElementById('skill-card-template');
 
-        // --- 3. FUNCIONES DE RENDERIZADO ---
+    // --- 3. FUNCIONES DE RENDERIZADO ---
 
-        /**
-         * Renderiza una lista de skills en el contenedor.
-         * @param {Array} skillsToRender - La lista de objetos de skill a mostrar.
-         */
-        function renderSkills(skillsToRender) {
-            skillListContainer.innerHTML = ''; // Limpiar la lista actual
+    /**
+     * Renderiza una lista de skills en el contenedor.
+     * @param {Array} skillsToRender - La lista de objetos de skill a mostrar.
+     */
+    function renderSkills(skillsToRender) {
+        skillListContainer.innerHTML = ''; // Limpiar la lista actual
 
-            skillsToRender.forEach(skill => {
-                const card = skillCardTemplate.content.cloneNode(true);
+        skillsToRender.forEach(skill => {
+            const card = skillCardTemplate.content.cloneNode(true);
 
-                // Poblar datos básicos
-                card.querySelector('.skill-name').textContent = skill.name;
-                card.querySelector('.skill-description').textContent = skill.description;
+            // Poblar datos básicos
+            card.querySelector('.skill-name').textContent = skill.name;
+            card.querySelector('.skill-description').textContent = skill.description;
 
-                // Poblar tags de dominio
-                const domainContainer = card.querySelector('.domain-tags');
-                skill.domain_tags.forEach(tag => {
-                    const tagElement = document.createElement('span');
-                    tagElement.className = 'tag tag-domain';
-                    tagElement.textContent = tag;
-                    domainContainer.appendChild(tagElement);
-                });
-
-                // Poblar tags de misión
-                const missionContainer = card.querySelector('.mission-tags');
-                skill.mission_tags.forEach(tag => {
-                    const tagElement = document.createElement('span');
-                    tagElement.className = 'tag tag-mission';
-                    tagElement.textContent = tag;
-                    missionContainer.appendChild(tagElement);
-                });
-
-                skillListContainer.appendChild(card);
-            });
-        }
-
-        /**
-         * Filtra la lista de skills basado en los inputs de búsqueda.
-         */
-        function filterAndRender() {
-            const nameQuery = searchNameInput.value.toLowerCase();
-            const domainQuery = searchDomainInput.value.toLowerCase();
-            const missionQuery = searchMissionInput.value.toLowerCase();
-
-            const filteredSkills = skills.filter(skill => {
-                // Comprobación de Nombre
-                const nameMatch = skill.name.toLowerCase().includes(nameQuery);
-
-                // Comprobación de Domain Tag
-                // .some() comprueba si al menos un tag cumple la condición
-                const domainMatch = skill.domain_tags.some(tag => 
-                    tag.toLowerCase().includes(domainQuery)
-                );
-
-                // Comprobación de Mission Tag
-                const missionMatch = skill.mission_tags.some(tag => 
-                    tag.toLowerCase().includes(missionQuery)
-                );
-
-                // El skill debe cumplir con las tres condiciones
-                return nameMatch && domainMatch && missionMatch;
+            // Poblar tags de dominio
+            const domainContainer = card.querySelector('.domain-tags');
+            skill.domain_tags.forEach(tag => {
+                const tagElement = document.createElement('span');
+                tagElement.className = 'tag tag-domain';
+                tagElement.textContent = tag;
+                domainContainer.appendChild(tagElement);
             });
 
-            renderSkills(filteredSkills);
-        }
+            // Poblar tags de misión
+            const missionContainer = card.querySelector('.mission-tags');
+            skill.mission_tags.forEach(tag => {
+                const tagElement = document.createElement('span');
+                tagElement.className = 'tag tag-mission';
+                tagElement.textContent = tag;
+                missionContainer.appendChild(tagElement);
+            });
 
-        // --- 4. EVENT LISTENERS ---
+            skillListContainer.appendChild(card);
+        });
+    }
 
-        // Renderizar todo al cargar la página
-        document.addEventListener('DOMContentLoaded', () => {
-            renderSkills(skills);
+    /**
+     * Filtra la lista de skills basado en los inputs de búsqueda.
+     */
+    function filterAndRender() {
+        const nameQuery = searchNameInput.value.toLowerCase();
+        const domainQuery = searchDomainInput.value.toLowerCase();
+        const missionQuery = searchMissionInput.value.toLowerCase();
+
+        const filteredSkills = skills.filter(skill => {
+            // Comprobación de Nombre
+            const nameMatch = skill.name.toLowerCase().includes(nameQuery);
+
+            // Comprobación de Domain Tag
+            // .some() comprueba si al menos un tag cumple la condición
+            const domainMatch = skill.domain_tags.some(tag => 
+                tag.toLowerCase().includes(domainQuery)
+            );
+
+            // Comprobación de Mission Tag
+            const missionMatch = skill.mission_tags.some(tag => 
+                tag.toLowerCase().includes(missionQuery)
+            );
+
+            // El skill debe cumplir con las tres condiciones
+            return nameMatch && domainMatch && missionMatch;
         });
 
-        // Añadir listeners a los inputs de búsqueda
-        searchNameInput.addEventListener('input', filterAndRender);
-        searchDomainInput.addEventListener('input', filterAndRender);
-        searchMissionInput.addEventListener('input', filterAndRender);
+        renderSkills(filteredSkills);
+    }
+
+    // --- 4. EVENT LISTENERS ---
+
+    // Renderizar todo al cargar la página
+    document.addEventListener('DOMContentLoaded', () => {
+        renderSkills(skills);
+    });
+
+    // Añadir listeners a los inputs de búsqueda
+    searchNameInput.addEventListener('input', filterAndRender);
+    searchDomainInput.addEventListener('input', filterAndRender);
+    searchMissionInput.addEventListener('input', filterAndRender);
 
     </script>
 </body>
