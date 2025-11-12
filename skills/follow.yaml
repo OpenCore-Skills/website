@@ -1,0 +1,4 @@
+name: follow
+domain_tags: [hri, navigation, collaboration, mobility]
+mission_tags: [assistance, logistics, human_robot_interaction]
+description: Follows a designated human operator while maintaining a safe distance.
