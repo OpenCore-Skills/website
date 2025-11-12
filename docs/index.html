@@ -119,7 +119,6 @@
         .skill-card:hover {
             box-shadow: 0 3px 6px rgba(149,157,165,0.2);
         }
-        /* Make skill name header a link */
         .skill-card h3 {
             margin: 0 0 10px;
         }
@@ -132,7 +131,6 @@
         .skill-card h3 a:hover {
             text-decoration: underline;
         }
-        /* End link style */
         .skill-card p {
             margin: 0 0 15px;
         }
@@ -265,16 +263,11 @@
             skillsToRender.forEach(skill => {
                 const card = skillCardTemplate.content.cloneNode(true);
                 
-                // --- THIS IS THE UPDATE ---
-                // Find the <h3> element
                 const skillNameElement = card.querySelector('.skill-name');
-                // Create a new <a> element
                 const skillLink = document.createElement('a');
-                skillLink.href = `/${skill.name}.html`; // e.g., /pick.html
+                skillLink.href = `/${skill.name}.html`; 
                 skillLink.textContent = skill.name;
-                // Put the <a> inside the <h3>
                 skillNameElement.appendChild(skillLink);
-                // --- END UPDATE ---
 
                 card.querySelector('.skill-description').textContent = skill.description;
 
@@ -416,6 +409,7 @@
                 input = searchNameInput;
             } else {
                 return;
+Empty
             }
             
             const queries = input.value.split(',')
@@ -425,10 +419,8 @@
                 const tagText = tagEl.textContent.toLowerCase();
                 let isSelected = false;
                 if (tagType === 'name') {
-                    // An OR match: is *any* query in this tag?
                     isSelected = queries.some(q => tagText.includes(q));
                 } else {
-                    // An exact match: is this tag *in* the query list?
                     isSelected = queries.includes(tagText);
                 }
                 
@@ -456,10 +448,32 @@
 
         // --- 6. EVENT LISTENERS ---
 
+        // UPDATED: This whole block is new
         document.addEventListener('DOMContentLoaded', () => {
+            // 1. Create the checklist filters
             populateChecklists();
-            renderSkills(skills);
+
+            // 2. NEW: Check for URL parameters
+            const urlParams = new URLSearchParams(window.location.search);
+            const domainTagQuery = urlParams.get('domain_tag');
+            const missionTagQuery = urlParams.get('mission_tag');
+
+            // 3. NEW: If a domain tag is found, apply it
+            if (domainTagQuery) {
+                searchDomainInput.value = domainTagQuery;
+                updateChecklistFromSearch('domain');
+            }
+            // 4. NEW: If a mission tag is found, apply it
+            if (missionTagQuery) {
+                searchMissionInput.value = missionTagQuery;
+                updateChecklistFromSearch('mission');
+            }
+
+            // 5. Run the filter. This will show all skills
+            //    OR a filtered list if a URL parameter was found.
+            filterAndRender();
         });
+        // END UPDATE
 
         searchNameInput.addEventListener('input', () => {
             updateChecklistFromSearch('name');
