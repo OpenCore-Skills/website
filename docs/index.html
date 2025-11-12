@@ -35,13 +35,35 @@
             color: #586069;
         }
 
-        /* Search Controls */
-        #controls {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 15px;
-            margin-bottom: 15px;
+        /* --- UPDATED: Tool Sections Layout --- */
+
+        /* Common class for spacing between tools */
+        .tool-section {
+            margin-bottom: 25px;
         }
+
+        /* Tool 1: Main Search (3-column) */
+        #tool-1-search {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+        }
+
+        /* Tool 2: Checklists (3-column) */
+        #tool-2-checklists {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+        }
+
+        /* Tool 3: Description (1-column, full-width) */
+        #tool-3-description {
+            /* No grid needed, it will be 100% width by default */
+        }
+        
+        /* --- End Tool Sections --- */
+
+
         .search-group {
             display: flex;
             flex-direction: column;
@@ -58,12 +80,6 @@
         }
 
         /* Checklist Styles */
-        #checklist-container {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 15px;
-            margin-bottom: 30px;
-        }
         .checklist-group h3 {
             margin: 0 0 8px;
             font-weight: 600;
@@ -171,17 +187,11 @@
             <p>COllaborative REpository for Physical AI and Robotics Skills</p>
         </header>
 
-        <section id="controls">
+        <section id="tool-1-search" class="tool-section">
             <div class="search-group">
                 <label for="search-name">Search by Name</label>
                 <input type="text" id="search-name" placeholder="e.g. 'pick, place'">
             </div>
-            
-            <div class="search-group">
-                <label for="search-description">Search in Description</label>
-                <input type="text" id="search-description" placeholder="e.g. 'grasp', 'operator'">
-            </div>
-
             <div class="search-group">
                 <label for="search-domain">Search by Domain Tag</label>
                 <input type="text" id="search-domain" placeholder="e.g. 'manipulation, hri'">
@@ -192,7 +202,7 @@
             </div>
         </section>
 
-        <section id="checklist-container">
+        <section id="tool-2-checklists" class="tool-section">
             <div class="checklist-group">
                 <h3>Skill Name</h3>
                 <div id="name-checklist" class="tag-checklist">
@@ -208,6 +218,13 @@
                 <h3>Mission Tags</h3>
                 <div id="mission-checklist" class="tag-checklist">
                     </div>
+            </div>
+        </section>
+
+        <section id="tool-3-description" class="tool-section">
+            <div class="search-group">
+                <label for="search-description">Search in Description (100% width)</label>
+                <input type="text" id="search-description" placeholder="e.g. 'grasp', 'operator'">
             </div>
         </section>
 
@@ -466,7 +483,7 @@
             const urlParams = new URLSearchParams(window.location.search);
             const domainTagQuery = urlParams.get('domain_tag');
             const missionTagQuery = urlParams.get('mission_tag');
-            const descriptionQuery = urlParams.get('description');
+_obsolete: const descriptionQuery = urlParams.get('description');
 
             if (domainTagQuery) {
                 searchDomainInput.value = domainTagQuery;
@@ -476,9 +493,9 @@
                 searchMissionInput.value = missionTagQuery;
                 updateChecklistFromSearch('mission');
             }
-            if (descriptionQuery) {
-                searchDescriptionInput.value = descriptionQuery;
-            }
+_obsolete: if (descriptionQuery) {
+_obsolete:     searchDescriptionInput.value = descriptionQuery;
+_obsolete: }
 
             filterAndRender();
         });
