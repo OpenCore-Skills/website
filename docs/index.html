@@ -35,9 +35,51 @@
             color: #586069;
         }
 
+        /* --- NEW: Collapsible Tool Section Styles --- */
+        #search-filters {
+            border: 1px solid #d1d5da;
+            border-radius: 6px;
+            margin-bottom: 30px;
+            background-color: #fff;
+        }
+        #search-filters summary {
+            font-size: 1.1em;
+            font-weight: 600;
+            color: #0366d6;
+            padding: 16px;
+            cursor: pointer;
+            list-style: none; /* Remove default triangle */
+        }
+        #search-filters summary:hover {
+            background-color: #f6f8fa;
+        }
+        /* Simple triangle icon */
+        #search-filters summary::before {
+            content: '►';
+            margin-right: 8px;
+            font-size: 0.8em;
+            display: inline-block;
+            transition: transform 0.2s;
+        }
+        #search-filters[open] summary::before {
+            transform: rotate(90deg);
+        }
+        /* This holds the tools */
+        .tools-container {
+            padding: 20px;
+            padding-top: 0;
+            border-top: 1px solid #e1e4e8;
+        }
+        /* --- End Collapsible Styles --- */
+
+
         /* Tool Sections Layout */
         .tool-section {
             margin-bottom: 25px;
+        }
+        /* Remove margin from the last tool */
+        .tool-section:last-child {
+            margin-bottom: 0;
         }
 
         /* Tool 1: Main Search (3-column) */
@@ -52,11 +94,6 @@
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
             gap: 15px;
-        }
-
-        /* Tool 3: Description (1-column, full-width) */
-        #tool-3-description {
-            /* No grid needed, it will be 100% width by default */
         }
         
         .search-group {
@@ -85,7 +122,7 @@
             display: flex;
             flex-wrap: wrap;
             gap: 8px;
-            background-color: #fff;
+            background-color: #f6f8fa; /* Light background for contrast */
             border: 1px solid #d1d5da;
             padding: 10px;
             border-radius: 6px;
@@ -98,7 +135,7 @@
             border-radius: 15px;
             font-size: 0.85em;
             font-weight: 600;
-            background-color: #f6f8fa;
+            background-color: #fff; /* White tags */
             color: #444;
             border: 1px solid #d1d5da;
             cursor: pointer;
@@ -119,7 +156,6 @@
             display: grid;
             grid-template-columns: 1fr;
             gap: 15px;
-            /* Set a minimum height to prevent layout jump */
             min-height: 500px; 
         }
         .skill-card {
@@ -175,7 +211,7 @@
             text-decoration: underline;
         }
         
-        /* --- NEW: Pagination Styles --- */
+        /* Pagination Styles */
         #pagination-controls {
             display: flex;
             justify-content: center;
@@ -202,7 +238,6 @@
             border-color: #0366d6;
             font-weight: 600;
         }
-        /* --- End Pagination Styles --- */
     </style>
 </head>
 <body>
@@ -210,50 +245,55 @@
     <div class="container">
         <header>
             <h1>OpenCORE-Skills</h1>
-            <p>COllaborative REpository for Physical AI and Robotics Skills</p>
+            <p><strong>Open</strong> <strong>CO</strong>llaborative <strong>RE</strong>pository for Physical AI and Robotics <strong>Skills</strong></p>
         </header>
 
-        <section id="tool-1-search" class="tool-section">
-            <div class="search-group">
-                <label for="search-name">Search by Name</label>
-                <input type="text" id="search-name" placeholder="e.g. 'pick, place'">
-            </div>
-            <div class="search-group">
-                <label for="search-domain">Search by Domain Tag</label>
-                <input type="text" id="search-domain" placeholder="e.g. 'manipulation, hri'">
-            </div>
-            <div class="search-group">
-                <label for="search-mission">Search by Mission Tag</label>
-                <input type="text" id="search-mission" placeholder="e.g. 'logistics'">
-            </div>
-        </section>
-
-        <section id="tool-2-checklists" class="tool-section">
-            <div class="checklist-group">
-                <h3>Skill Name</h3>
-                <div id="name-checklist" class="tag-checklist">
-                    </div>
-            </div>
+        <details id="search-filters">
+            <summary>Show Search Tools</summary>
             
-            <div class="checklist-group">
-                <h3>Domain Tags</h3>
-                <div id="domain-checklist" class="tag-checklist">
+            <div class="tools-container">
+                <section id="tool-1-search" class="tool-section">
+                    <div class="search-group">
+                        <label for="search-name">Search by Name</label>
+                        <input type="text" id="search-name" placeholder="e.g. 'pick, place'">
                     </div>
-            </div>
-            <div class="checklist-group">
-                <h3>Mission Tags</h3>
-                <div id="mission-checklist" class="tag-checklist">
+                    <div class="search-group">
+                        <label for="search-domain">Search by Domain Tag</label>
+                        <input type="text" id="search-domain" placeholder="e.g. 'manipulation, hri'">
                     </div>
-            </div>
-        </section>
+                    <div class="search-group">
+                        <label for="search-mission">Search by Mission Tag</label>
+                        <input type="text" id="search-mission" placeholder="e.g. 'logistics'">
+                    </div>
+                </section>
 
-        <section id="tool-3-description" class="tool-section">
-            <div class="search-group">
-                <label for="search-description">Search in Description (all words must match)</label>
-                <input type="text" id="search-description" placeholder="e.g. 'grasp object'">
-            </div>
-        </section>
+                <section id="tool-2-checklists" class="tool-section">
+                    <div class="checklist-group">
+                        <h3>Skill Name</h3>
+                        <div id="name-checklist" class="tag-checklist">
+                            </div>
+                    </div>
+                    
+                    <div class="checklist-group">
+                        <h3>Domain Tags</h3>
+                        <div id="domain-checklist" class="tag-checklist">
+                            </div>
+                    </div>
+                    <div class="checklist-group">
+                        <h3>Mission Tags</h3>
+                        <div id="mission-checklist" class="tag-checklist">
+                            </div>
+                    </div>
+                </section>
 
+                <section id="tool-3-description" class="tool-section">
+                    <div class="search-group">
+                        <label for="search-description">Search in Description (all words must match)</label>
+                        <input type="text" id="search-description" placeholder="e.g. 'grasp object'">
+                    </div>
+                </section>
+            </div>
+        </details>
         <main id="skill-list">
             </main>
         
@@ -281,7 +321,6 @@
         let allDomainTags = [];
         let allMissionTags = [];
 
-        // --- NEW: Pagination State ---
         let currentPage = 1;
         const skillsPerPage = 10;
 
@@ -331,12 +370,7 @@
             });
         }
 
-        /**
-         * MODIFIED: Now handles pagination logic.
-         * @param {object} options - Optional object, e.g., { filterChanged: true }
-         */
         function filterAndRender(options = {}) {
-            // NEW: If a filter changed, reset to page 1
             if (options.filterChanged) {
                 currentPage = 1;
             }
@@ -362,7 +396,6 @@
                 return (skill[tagType] || []).map(t => t.toLowerCase());
             };
 
-            // 1. Get the FULL filtered list
             const filteredSkills = skills.filter(skill => {
                 const skillNameLower = skill.name.toLowerCase();
                 const skillDescriptionLower = (skill.description || "").toLowerCase();
@@ -388,22 +421,13 @@
                 return nameMatch && descriptionMatch && domainMatch && missionMatch;
             });
 
-            // --- NEW PAGINATION LOGIC ---
-            
-            // 2. Calculate total pages from the FULL filtered list
             const totalPages = Math.ceil(filteredSkills.length / skillsPerPage);
-
-            // 3. Get the "slice" (10 items) for the current page
             const start = (currentPage - 1) * skillsPerPage;
             const end = start + skillsPerPage;
             const skillsForThisPage = filteredSkills.slice(start, end);
 
-            // 4. Render just the 10 skills for this page
             renderSkills(skillsForThisPage);
-
-            // 5. Render the page number buttons
             renderPagination(totalPages);
-            // --- END NEW PAGINATION LOGIC ---
         }
 
         // --- 5. CHECKLIST FUNCTIONS ---
@@ -470,7 +494,7 @@
                 .map(tagEl => tagEl.textContent);
             
             input.value = selectedTags.join(', ');
-            filterAndRender({ filterChanged: true }); // A filter changed
+            filterAndRender({ filterChanged: true });
         }
         
         function updateChecklistFromSearch(tagType) {
@@ -519,20 +543,15 @@
             input.value = currentQueries.join(', ');
             
             updateChecklistFromSearch(tagType);
-            filterAndRender({ filterChanged: true }); // A filter changed
+            filterAndRender({ filterChanged: true });
         }
 
-        // --- 6. NEW: PAGINATION FUNCTIONS ---
+        // --- 6. PAGINATION FUNCTIONS ---
         
-        /**
-         * Renders the page number buttons
-         * @param {number} totalPages - The total number of pages
-         */
         function renderPagination(totalPages) {
             const container = document.getElementById('pagination-controls');
-            container.innerHTML = ''; // Clear old buttons
+            container.innerHTML = ''; 
 
-            // Only show buttons if there's more than one page
             if (totalPages <= 1) return;
 
             for (let i = 1; i <= totalPages; i++) {
@@ -542,39 +561,29 @@
                 if (i === currentPage) {
                     btn.classList.add('active');
                 }
-                // Add click handler to change page
                 btn.addEventListener('click', () => handlePageClick(i));
                 container.appendChild(btn);
             }
         }
 
-        /**
-         * Handles a click on a page number button
-         * @param {number} pageNumber - The page to navigate to
-         */
         function handlePageClick(pageNumber) {
             currentPage = pageNumber;
-            filterAndRender({ filterChanged: false }); // Page changed, not filter
-            // Scroll to the top of the skill list
+            filterAndRender({ filterChanged: false });
             document.getElementById('skill-list').scrollIntoView({ behavior: 'smooth' });
         }
 
         // --- 7. EVENT LISTENERS ---
         document.addEventListener('DOMContentLoaded', () => {
             
-            // --- NEW: Sort skills alphabetically by name ---
             skills.sort((a, b) => a.name.localeCompare(b.name));
 
-            // We need to get elements *after* the page has loaded
             const searchNameInput = document.getElementById('search-name');
             const searchDescriptionInput = document.getElementById('search-description');
             const searchDomainInput = document.getElementById('search-domain');
             const searchMissionInput = document.getElementById('search-mission');
 
-            // 1. Populate the checklists
             populateChecklists();
 
-            // 2. Check for URL parameters
             const urlParams = new URLSearchParams(window.location.search);
             const domainTagQuery = urlParams.get('domain_tag');
             const missionTagQuery = urlParams.get('mission_tag');
@@ -588,27 +597,25 @@
                 updateChecklistFromSearch('mission');
             }
 
-            // 3. Run the initial filter and render
-            filterAndRender({ filterChanged: false }); // Initial load
+            filterAndRender({ filterChanged: false });
 
-            // 4. Add all event listeners
             searchNameInput.addEventListener('input', () => {
                 updateChecklistFromSearch('name');
-                filterAndRender({ filterChanged: true }); // A filter changed
+                filterAndRender({ filterChanged: true });
             });
             
             searchDescriptionInput.addEventListener('input', () => {
-                filterAndRender({ filterChanged: true }); // A filter changed
+                filterAndRender({ filterChanged: true });
             });
             
             searchDomainInput.addEventListener('input', () => {
                 updateChecklistFromSearch('domain');
-                filterAndRender({ filterChanged: true }); // A filter changed
+                filterAndRender({ filterChanged: true });
             });
             
             searchMissionInput.addEventListener('input', () => {
                 updateChecklistFromSearch('mission');
-                filterAndRender({ filterChanged: true }); // A filter changed
+                filterAndRender({ filterChanged: true });
             });
         });
 
