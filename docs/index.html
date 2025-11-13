@@ -1,5 +1,224 @@
+You are right, and I apologize for that error. It's a classic and very frustrating JavaScript problem.
+
+That error, `searchNameInput is null`, means the JavaScript code is trying to find your search boxes (`<input id="search-name">`) *before* the browser has finished loading the HTML.
+
+To fix this, we must move **all** the code that interacts with the page (getting elements, adding event listeners) *inside* the `DOMContentLoaded` event listener. This ensures the script waits for the page to be ready.
+
+Here is the complete, corrected `docs/index.html` file. The only changes are inside the `<script>` block at the bottom.
+
+### `docs/index.html` (Corrected)
+
+```html
 <!DOCTYPE html>
-<template id="skill-card-template">
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OpenCORE-Skills Catalog</title>
+    <style>
+        /* All your CSS is correct and unchanged */
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f6f8fa;
+            color: #24292e;
+        }
+        .container {
+            max-width: 960px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        header {
+            border-bottom: 1px solid #e1e4e8;
+            padding-bottom: 20px;
+            margin-bottom: 30px;
+        }
+        header h1 {
+            margin: 0;
+            color: #0366d6;
+        }
+        header p {
+            margin: 5px 0 0;
+            font-size: 1.1em;
+            color: #586069;
+        }
+        .tool-section {
+            margin-bottom: 25px;
+        }
+        #tool-1-search {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+        }
+        #tool-2-checklists {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+        }
+        #tool-3-description {
+            /* No grid needed, it will be 100% width by default */
+        }
+        .search-group {
+            display: flex;
+            flex-direction: column;
+        }
+        .search-group label {
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+        .search-group input {
+            padding: 10px;
+            font-size: 1em;
+            border: 1px solid #d1d5da;
+            border-radius: 6px;
+        }
+        .checklist-group h3 {
+            margin: 0 0 8px;
+            font-weight: 600;
+            font-size: 1em;
+            color: #586069;
+        }
+        .tag-checklist {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            background-color: #fff;
+            border: 1px solid #d1d5da;
+            padding: 10px;
+            border-radius: 6px;
+            min-height: 40px;
+            max-height: 150px;
+            overflow-y: auto;
+        }
+        .check-tag {
+            padding: 4px 10px;
+            border-radius: 15px;
+            font-size: 0.85em;
+            font-weight: 600;
+            background-color: #f6f8fa;
+            color: #444;
+            border: 1px solid #d1d5da;
+            cursor: pointer;
+            transition: all 0.1s;
+            user-select: none;
+        }
+        .check-tag.selected {
+            background-color: #0366d6;
+            color: #fff;
+            border-color: #0366d6;
+        }
+        .check-tag:hover {
+            opacity: 0.8;
+        }
+        #skill-list {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 15px;
+        }
+        .skill-card {
+            background-color: #fff;
+            border: 1px solid #e1e4e8;
+            border-radius: 6px;
+            padding: 20px;
+            transition: box-shadow 0.2s;
+        }
+        .skill-card:hover {
+            box-shadow: 0 3px 6px rgba(149,157,165,0.2);
+        }
+        .skill-card h3 {
+            margin: 0 0 10px;
+        }
+        .skill-card h3 a {
+            font-family: Consolas, "Courier New", monospace;
+            color: #0366d6;
+            text-decoration: none;
+            font-weight: 600;
+        }
+        .skill-card h3 a:hover {
+            text-decoration: underline;
+        }
+        .skill-card p {
+            margin: 0 0 15px;
+        }
+        .skill-card .tag-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+        .skill-card .domain-tags {
+            margin-bottom: 8px;
+        }
+        .skill-card .tag {
+            padding: 4px 10px;
+            border-radius: 15px;
+            font-size: 0.85em;
+            font-weight: 600;
+        }
+        .skill-card .tag-domain {
+            background-color: #f0f8ff; /* Light Blue */
+            color: #0366d6;
+        }
+        .skill-card .tag-mission {
+            background-color: #f3f9f0; /* Light Green */
+            color: #22863a;
+        }
+        .skill-card .tag:hover {
+            cursor: pointer;
+            opacity: 0.8;
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <header>
+            <h1>OpenCORE-Skills</h1>
+            <p>COllaborative REpository for Physical AI and Robotics Skills</p>
+        </header>
+
+        <section id="tool-1-search" class="tool-section">
+            <div class="search-group">
+                <label for="search-name">Search by Name</label>
+                <input type="text" id="search-name" placeholder="e.g. 'pick, place'">
+            </div>
+            <div class="search-group">
+                <label for="search-domain">Search by Domain Tag</label>
+                <input type="text" id="search-domain" placeholder="e.g. 'manipulation, hri'">
+            </div>
+            <div class="search-group">
+                <label for="search-mission">Search by Mission Tag</label>
+                <input type="text" id="search-mission" placeholder="e.g. 'logistics'">
+            </div>
+        </section>
+
+        <section id="tool-2-checklists" class="tool-section">
+            <div class="checklist-group">
+                <h3>Skill Name</h3>
+                <div id="name-checklist" class="tag-checklist"></div>
+            </div>
+            <div class="checklist-group">
+                <h3>Domain Tags</h3>
+                <div id="domain-checklist" class="tag-checklist"></div>
+            </div>
+            <div class="checklist-group">
+                <h3>Mission Tags</h3>
+                <div id="mission-checklist" class="tag-checklist"></div>
+            </div>
+        </section>
+
+        <section id="tool-3-description" class="tool-section">
+            <div class="search-group">
+                <label for="search-description">Search in Description (all words must match)</label>
+                <input type="text" id="search-description" placeholder="e.g. 'grasp object'">
+            </div>
+        </section>
+
+        <main id="skill-list"></main>
+    </div>
+
+    <template id="skill-card-template">
         <article class="skill-card">
             <h3 class="skill-name"></h3> 
             <p class="skill-description"></p>
@@ -10,34 +229,21 @@
 
 
     <script>
-        // --- 1. SKILL DATA (Mockup) ---
-        // DELETED: The hardcoded 'const skills = [...]' array is gone.
-        
-        // NEW: This line will be replaced by your build.py script.
-        // The 'safe' filter in Jinja ensures the JSON is parsed correctly.
+        // --- 1. SKILL DATA ---
+        // This is injected by your build.py script.
         const skills = {{ skills_json | safe }};
 
-        // --- 2. DOM REFERENCES ---
-        // (All the rest of the JavaScript is 100% IDENTICAL)
-        const searchNameInput = document.getElementById('search-name');
-        const searchDescriptionInput = document.getElementById('search-description');
-        const searchDomainInput = document.getElementById('search-domain');
-        const searchMissionInput = document.getElementById('search-mission');
-        const skillListContainer = document.getElementById('skill-list');
-        const skillCardTemplate = document.getElementById('skill-card-template');
-        
-        const nameChecklistContainer = document.getElementById('name-checklist');
-        const domainChecklistContainer = document.getElementById('domain-checklist');
-        const missionChecklistContainer = document.getElementById('mission-checklist');
-        
         // --- 3. GLOBAL STATE (for checklists) ---
+        // (Function definitions can safely live here)
         let allSkillNames = [];
         let allDomainTags = [];
         let allMissionTags = [];
 
         // --- 4. RENDERING & FILTERING FUNCTIONS ---
-
+        // (Function definitions can safely live here)
         function renderSkills(skillsToRender) {
+            const skillListContainer = document.getElementById('skill-list');
+            const skillCardTemplate = document.getElementById('skill-card-template');
             skillListContainer.innerHTML = ''; 
 
             if (skillsToRender.length === 0) {
@@ -57,7 +263,7 @@
                 card.querySelector('.skill-description').textContent = skill.description;
 
                 const domainContainer = card.querySelector('.domain-tags');
-                skill.domain_tags.forEach(tag => {
+                (skill.domain_tags || []).forEach(tag => {
                     const tagElement = document.createElement('span');
                     tagElement.className = 'tag tag-domain';
                     tagElement.textContent = tag;
@@ -66,7 +272,7 @@
                 });
 
                 const missionContainer = card.querySelector('.mission-tags');
-                skill.mission_tags.forEach(tag => {
+                (skill.mission_tags || []).forEach(tag => {
                     const tagElement = document.createElement('span');
                     tagElement.className = 'tag tag-mission';
                     tagElement.textContent = tag;
@@ -79,6 +285,13 @@
         }
 
         function filterAndRender() {
+            // Get references to inputs INSIDE this function,
+            // or pass them as arguments.
+            const searchNameInput = document.getElementById('search-name');
+            const searchDescriptionInput = document.getElementById('search-description');
+            const searchDomainInput = document.getElementById('search-domain');
+            const searchMissionInput = document.getElementById('search-mission');
+
             const nameQueries = searchNameInput.value.split(',')
                 .map(q => q.trim().toLowerCase()).filter(q => q.length > 0);
             
@@ -97,7 +310,7 @@
 
             const filteredSkills = skills.filter(skill => {
                 const skillNameLower = skill.name.toLowerCase();
-                const skillDescriptionLower = skill.description.toLowerCase();
+                const skillDescriptionLower = (skill.description || "").toLowerCase();
                 const skillDomainTags = getLowerTags(skill, 'domain_tags');
                 const skillMissionTags = getLowerTags(skill, 'mission_tags');
 
@@ -124,11 +337,15 @@
         }
 
         // --- 5. CHECKLIST FUNCTIONS ---
-
+        // (Function definitions can safely live here)
         function populateChecklists() {
+            const nameChecklistContainer = document.getElementById('name-checklist');
+            const domainChecklistContainer = document.getElementById('domain-checklist');
+            const missionChecklistContainer = document.getElementById('mission-checklist');
+
             const nameSet = new Set(skills.map(s => s.name));
-            const domainTagSet = new Set(skills.flatMap(s => s.domain_tags));
-            const missionTagSet = new Set(skills.flatMap(s => s.mission_tags));
+            const domainTagSet = new Set(skills.flatMap(s => s.domain_tags || []));
+            const missionTagSet = new Set(skills.flatMap(s => s.mission_tags || []));
             
             allSkillNames = [...nameSet].sort();
             allDomainTags = [...domainTagSet].sort();
@@ -167,14 +384,14 @@
         function updateSearchFromChecklist(tagType) {
             let container, input;
             if (tagType === 'domain') {
-                container = domainChecklistContainer;
-                input = searchDomainInput;
+                container = document.getElementById('domain-checklist');
+                input = document.getElementById('search-domain');
             } else if (tagType === 'mission') {
-                container = missionChecklistContainer;
-                input = searchMissionInput;
+                container = document.getElementById('mission-checklist');
+                input = document.getElementById('search-mission');
             } else if (tagType === 'name') {
-                container = nameChecklistContainer;
-                input = searchNameInput;
+                container = document.getElementById('name-checklist');
+                input = document.getElementById('search-name');
             } else {
                 return;
             }
@@ -189,14 +406,14 @@
         function updateChecklistFromSearch(tagType) {
             let container, input;
             if (tagType === 'domain') {
-                container = domainChecklistContainer;
-                input = searchDomainInput;
+                container = document.getElementById('domain-checklist');
+                input = document.getElementById('search-domain');
             } else if (tagType === 'mission') {
-                container = missionChecklistContainer;
-                input = searchMissionInput;
+                container = document.getElementById('mission-checklist');
+                input = document.getElementById('search-mission');
             } else if (tagType === 'name') {
-                container = nameChecklistContainer;
-                input = searchNameInput;
+                container = document.getElementById('name-checklist');
+                input = document.getElementById('search-name');
             } else {
                 return;
             }
@@ -218,7 +435,7 @@
         }
 
         function handleTagClick(tagText, tagType) {
-            let input = (tagType === 'domain') ? searchDomainInput : searchMissionInput;
+            let input = (tagType === 'domain') ? document.getElementById('search-domain') : document.getElementById('search-mission');
             
             const currentQueries = input.value.split(',')
                 .map(q => q.trim().toLowerCase()).filter(q => q.length > 0);
@@ -236,13 +453,24 @@
         }
 
         // --- 6. EVENT LISTENERS ---
-
+        // **** THIS IS THE FIX ****
+        // All code that touches the DOM is now INSIDE this listener.
         document.addEventListener('DOMContentLoaded', () => {
-            populateChecklists(); // This will now use the dynamically injected 'skills' list
+            
+            // --- 2. DOM REFERENCES ---
+            // We now get the elements *after* the page has loaded
+            const searchNameInput = document.getElementById('search-name');
+            const searchDescriptionInput = document.getElementById('search-description');
+            const searchDomainInput = document.getElementById('search-domain');
+            const searchMissionInput = document.getElementById('search-mission');
 
+            // 1. Populate the checklists
+            populateChecklists();
+
+            // 2. Check for URL parameters
             const urlParams = new URLSearchParams(window.location.search);
             const domainTagQuery = urlParams.get('domain_tag');
-            const missionTagQuery = urlS.get('mission_tag');
+            const missionTagQuery = urlParams.get('mission_tag');
 
             if (domainTagQuery) {
                 searchDomainInput.value = domainTagQuery;
@@ -253,26 +481,29 @@
                 updateChecklistFromSearch('mission');
             }
 
+            // 3. Run the initial filter and render
             filterAndRender();
-        });
 
-        searchNameInput.addEventListener('input', () => {
-            updateChecklistFromSearch('name');
-            filterAndRender();
-        });
-        
-        searchDescriptionInput.addEventListener('input', filterAndRender);
-        
-        searchDomainInput.addEventListener('input', () => {
-            updateChecklistFromSearch('domain');
-            filterAndRender();
-        });
-        
-        searchMissionInput.addEventListener('input', () => {
-            updateChecklistFromSearch('mission');
-            filterAndRender();
+            // 4. Add all event listeners
+            searchNameInput.addEventListener('input', () => {
+                updateChecklistFromSearch('name');
+                filterAndRender();
+            });
+            
+            searchDescriptionInput.addEventListener('input', filterAndRender);
+            
+            searchDomainInput.addEventListener('input', () => {
+                updateChecklistFromSearch('domain');
+                filterAndRender();
+            });
+            
+            searchMissionInput.addEventListener('input', () => {
+                updateChecklistFromSearch('mission');
+                filterAndRender();
+            });
         });
 
     </script>
 </body>
 </html>
+```
