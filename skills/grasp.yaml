@@ -1,0 +1,4 @@
+name: grasp
+domain_tags: [manipulation, grasping, end_effector]
+mission_tags: [pick_and_place, bin_picking, machine_tending]
+description: Closes a gripper or end-effector to secure an object. This is a lower-level primitive, often part of a 'pick' skill.
